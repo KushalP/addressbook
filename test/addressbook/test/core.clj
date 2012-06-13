@@ -58,5 +58,4 @@
          (-> (:body (app (request :get (str "/contact/" id))))
              (json/read-json)
              (dissoc :_id)
-             (dissoc :keywords)
              (json/json-str)))))
