@@ -46,6 +46,13 @@
          {:headers {"Content-Type" "text/vcard"}
           :body body
           :status status}))
+  (POST "/contact" {params :params}
+        (let [result (add-contact params)]
+          {:headers {"Content-Type" "application/json"}
+           :body (-> {:message "contact created"
+                      :id (:_id result)}
+                     json/json-str)
+           :status 201}))
   (route/not-found "<h1>Error</h1>"))
 
 (def app

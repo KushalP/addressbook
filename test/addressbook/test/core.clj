@@ -69,3 +69,19 @@
   (is (= 200 (:status (app (request :get (str "/contact/" id "/vcard"))))))
   (is (= "BEGIN:VCARD\nVERSION:4.0\nN:Gump;Forrest;;;\nFN: Forrest Gump\nORG:Bubba Gump Shrimp Co.\nTITLE:Shrimp Man\nPHOTO:http://www.example.com/dir_photos/my_photo.gif\nTEL;TYPE=\"work,voice\";VALUE=uri:tel:+1-111-555-1212\nTEL;TYPE=\"home,voice\";VALUE=uri:tel:+1-404-555-1212\nADR;TYPE=work;LABEL=\"42 Plantation St.\nBaytown, LA 30314\nUnited States of America\"\n :;;42 Plantation St.;Baytown;LA;30314;United States of America\nEMAIL:forrestgump@example.com\nREV:20080424T195243Z\nEND:VCARD"
          (:body (app (request :get (str "/contact/" id "/vcard")))))))
+
+(deftest contact-is-created-on-post
+  (let [response (app (-> (request :post "/contact")
+                          (header "content-type" "application/x-www-form-urlencoded")
+                          (body (update-in test-record [:formatted-name] (fn [_] "Dummy")))))]
+    (is (= {"Content-Type" "application/json"} (:headers response)))
+    ;; Drop the :id key as this is likely to be dynamically generated
+    ;; for each test run.
+    (is (= {:message "contact created"}
+           (-> (:body response)
+               (json/read-json)
+               (dissoc :id))))
+    (is (= 201 (:status response)))
+    (is (= "Dummy"
+           (:formatted-name (fetch-one :contacts
+                                       :where {:formatted-name "Dummy"}))))))
