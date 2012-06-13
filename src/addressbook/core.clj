@@ -1,7 +1,8 @@
 (ns addressbook.core
   (:use [compojure.core]
         [ring.middleware.params :only [wrap-params]]
-        [addressbook.data])
+        [addressbook.data]
+        [addressbook.format])
   (:require [clojure.data.json :as json]
             [compojure.handler :as handler]
             [compojure.route :as route]))
@@ -35,6 +36,14 @@
                       (json/json-str))
              status (status-helper result)]
          {:headers {"Content-Type" "application/json"}
+          :body body
+          :status status}))
+  (GET "/contact/:id/vcard" [id]
+       (let [result (get-contact-wrapper id)
+             body (-> result
+                      (vcard))
+             status (status-helper result)]
+         {:headers {"Content-Type" "text/vcard"}
           :body body
           :status status}))
   (route/not-found "<h1>Error</h1>"))
