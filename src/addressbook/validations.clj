@@ -16,6 +16,7 @@
         [(empty? errors) errors]))))
 
 (def record-validations
+  "Validation set for the map form of a vCard data structure"
   (validation-set
    ;; check keys exist.
    (presence-of :name)
