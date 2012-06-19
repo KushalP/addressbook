@@ -26,6 +26,21 @@
                                 :code "30314"
                                 :country "United States of America"}]
                      :email "forrestgump@example.com"}]
+    (testing "is-vector function"
+      (let [v (validation-set (is-vector :tel))]
+        (deftest bad-inputs-do-not-validate
+          (is (= false (valid? v {:tel nil})))
+          (is (= false (valid? v {:tel ""})))
+          (is (= false (valid? v {:tel 42})))
+          (is (= false (valid? v {:tel '()})))
+          (is (= false (valid? v {:tel #{}})))
+          (is (= false (valid? v {:tel #""}))))
+        (deftest bad-inputs-show-an-error-message
+          (is (= {:tel #{"must be a vector"}} (v {:tel nil}))))
+        (deftest vectors-will-pass
+          (is (= true (valid? v {:tel []})))
+          (is (= {} (v {:tel []}))))))
+
     (testing "map structure"
       (testing "formatted-name"
         (deftest formatted-name-should-be-present
