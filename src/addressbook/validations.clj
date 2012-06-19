@@ -5,6 +5,7 @@
   #"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b")
 
 (defn is-vector
+  "A valid validateur function to check if a given key in our map holds a vector"
   [attribute]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
@@ -32,4 +33,6 @@
    (presence-of :email)
 
    ;; check values are formatted correctly.
-   (format-of :email :format email-regex :allow-blank true)))
+   (format-of :email :format email-regex :allow-blank true)
+   (is-vector :address)
+   (is-vector :tel)))
