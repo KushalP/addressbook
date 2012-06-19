@@ -4,6 +4,16 @@
 (def email-regex
   #"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b")
 
+(defn is-vector
+  [attribute]
+  (let [f (if (vector? attribute) get-in get)]
+    (fn [m]
+      (let [value  (f m attribute)
+            errors (if (vector? value)
+                     {}
+                     {attribute #{"must be a vector"}})]
+        [(empty? errors) errors]))))
+
 (def record-validations
   (validation-set
    ;; check keys exist.
