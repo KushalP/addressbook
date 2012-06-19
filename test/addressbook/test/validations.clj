@@ -1,5 +1,6 @@
 (ns addressbook.test.validations
-  (:use [addressbook.validations]
+  (:use [addressbook.data]
+        [addressbook.validations]
         [clojure.test]
         [mississippi.core]))
 
@@ -26,11 +27,11 @@
                                 :country "United States of America"}]
                      :email "forrestgump@example.com"}]
     (deftest requires-formatted-name
-      (is (= false (valid? (validate (dissoc test-record :formatted-name) vcard-validations))))
-      (is (= {:formatted-name '("required")} (:errors (validate (dissoc test-record :formatted-name) vcard-validations))))
-      (is (= true (valid? (validate test-record vcard-validations)))))
+      (is (= false (valid? (validate (dissoc test-record :formatted-name) record-validations))))
+      (is (= {:formatted-name '("required")} (:errors (validate (dissoc test-record :formatted-name) record-validations))))
+      (is (= true (valid? (validate test-record record-validations)))))
     (deftest email-should-be-properly-formatted
-      (is (= false (valid? (validate (update-in test-record [:email] (fn [x] "bleh")) vcard-validations))))
-      (is (= {:email '("invalid email address")} (:errors (validate (dissoc test-record :email) vcard-validations))))
-      (is (= {:email '("invalid email address")} (:errors (validate (update-in test-record [:email] (fn [x] "bleh")) vcard-validations))))
-      (is (= true (valid? (validate test-record vcard-validations)))))))
+      (is (= false (valid? (validate (update-in test-record [:email] (fn [x] "bleh")) record-validations))))
+      (is (= {:email '("invalid email address")} (:errors (validate (dissoc test-record :email) record-validations))))
+      (is (= {:email '("invalid email address")} (:errors (validate (update-in test-record [:email] (fn [x] "bleh")) record-validations))))
+      (is (= true (valid? (validate test-record record-validations)))))))

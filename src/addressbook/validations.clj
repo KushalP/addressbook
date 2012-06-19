@@ -1,6 +1,6 @@
 (ns addressbook.validations
   (:use mississippi.core))
 
-(def vcard-validations
+(def record-validations
   {:formatted-name [(comp not nil?) :msg "required"]
    :email [(matches-email)]})
