@@ -12,6 +12,13 @@ following within the project directory:
     lein deps
     lein test
 
+### Development Server
+
+To run a development server, run the following within the project
+directory:
+
+    lein ring server
+
 ## License
 
 Copyright (C) 2012 Kushal Pisavadia

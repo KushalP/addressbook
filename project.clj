@@ -7,4 +7,5 @@
                  [de.ubercode.clostache/clostache "1.3.0"]
                  [mississippi "1.0.0"]]
   :dev-dependencies [[lein-ring "0.7.1"]
-                     [ring-mock "0.1.2"]])
+                     [ring-mock "0.1.2"]]
+  :ring {:handler addressbook.core/app})
