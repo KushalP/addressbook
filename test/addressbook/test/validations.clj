@@ -26,20 +26,25 @@
                                 :code "30314"
                                 :country "United States of America"}]
                      :email "forrestgump@example.com"}]
-    (testing "is-vector function"
-      (let [v (validation-set (is-vector :tel))]
+    (testing "is-vector-of-maps function"
+      (let [v (validation-set (is-vector-of-maps :tel))]
         (deftest bad-inputs-do-not-validate
           (is (= false (valid? v {:tel nil})))
           (is (= false (valid? v {:tel ""})))
           (is (= false (valid? v {:tel 42})))
           (is (= false (valid? v {:tel '()})))
           (is (= false (valid? v {:tel #{}})))
-          (is (= false (valid? v {:tel #""}))))
+          (is (= false (valid? v {:tel #""})))
+          (is (= false (valid? v {:tel [nil nil nil]})))
+          (is (= false (valid? v {:tel [#{"b" "o"} #{"r" "k"}]})))
+          (is (= false (valid? v {:tel ['(1 2) '(3 4)]}))))
         (deftest bad-inputs-show-an-error-message
-          (is (= {:tel #{"must be a vector"}} (v {:tel nil}))))
-        (deftest vectors-will-pass
+          (is (= {:tel #{"must be a vector of maps"}} (v {:tel nil}))))
+        (deftest vectors-of-maps-will-pass
           (is (= true (valid? v {:tel []})))
-          (is (= {} (v {:tel []}))))))
+          (is (= {} (v {:tel []})))
+          (is (= {} (v {:tel [{:t 1000} {:company "cyberdyne"}]})))
+          (is (= true (valid? v {:tel [{:t 1000} {:company "cyberdyne"}]}))))))
 
     (testing "map structure"
       (testing "formatted-name"

@@ -4,15 +4,16 @@
 (def email-regex
   #"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b")
 
-(defn is-vector
-  "A valid validateur function to check if a given key in our map holds a vector"
+(defn is-vector-of-maps
+  "A valid validateur function to check if a given key in our map holds a vector of maps"
   [attribute]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
       (let [value  (f m attribute)
-            errors (if (vector? value)
+            errors (if (and (vector? value)
+                            (every? map? value))
                      {}
-                     {attribute #{"must be a vector"}})]
+                     {attribute #{"must be a vector of maps"}})]
         [(empty? errors) errors]))))
 
 (def record-validations
@@ -35,5 +36,5 @@
 
    ;; check values are formatted correctly.
    (format-of :email :format email-regex :allow-blank true)
-   (is-vector :address)
-   (is-vector :tel)))
+   (is-vector-of-maps :address)
+   (is-vector-of-maps :tel)))
