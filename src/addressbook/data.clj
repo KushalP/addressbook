@@ -11,6 +11,21 @@
 (extend org.bson.types.ObjectId json/Write-JSON
         {:write-json write-json-mongodb-objectid})
 
+(def base-record
+  "The base map structure we'll conj against for key consistency"
+  {:name {:family ""
+          :given ""
+          :additional ""
+          :prefix ""
+          :suffix ""}
+   :formatted-name ""
+   :org ""
+   :title ""
+   :photo ""
+   :tel []
+   :address []
+   :email ""})
+
 (def conn
   (make-connection "contacts"
                    :host "127.0.0.1"

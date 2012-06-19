@@ -2,14 +2,14 @@
   (:use [addressbook.data]
         [addressbook.validations]
         [clojure.test]
-        [mississippi.core]))
+        [validateur.validation]))
 
 (testing "validations check map holds valid vCard data"
   (let [test-record {:name {:family "Gump"
                             :given "Forrest"
-                            :additional nil
-                            :prefix nil
-                            :suffix nil}
+                            :additional ""
+                            :prefix ""
+                            :suffix ""}
                      :formatted-name "Forrest Gump"
                      :org "Bubba Gump Shrimp Co."
                      :title "Shrimp Man"
@@ -27,11 +27,38 @@
                                 :country "United States of America"}]
                      :email "forrestgump@example.com"}]
     (deftest requires-formatted-name
-      (is (= false (valid? (validate (dissoc test-record :formatted-name) record-validations))))
-      (is (= {:formatted-name '("required")} (:errors (validate (dissoc test-record :formatted-name) record-validations))))
-      (is (= true (valid? (validate test-record record-validations)))))
-    (deftest email-should-be-properly-formatted
-      (is (= false (valid? (validate (update-in test-record [:email] (fn [x] "bleh")) record-validations))))
-      (is (= {:email '("invalid email address")} (:errors (validate (dissoc test-record :email) record-validations))))
-      (is (= {:email '("invalid email address")} (:errors (validate (update-in test-record [:email] (fn [x] "bleh")) record-validations))))
-      (is (= true (valid? (validate test-record record-validations)))))))
+      (is (= false
+             (valid? record-validations
+                     (dissoc test-record :formatted-name))))
+      (is (= {:formatted-name #{"can't be blank"}}
+             (record-validations (dissoc test-record :formatted-name))))
+      (is (= true
+             (valid? record-validations test-record))))
+
+    (testing "email"
+      (deftest email-should-be-properly-formatted
+        (is (= false
+               (valid? record-validations
+                       (update-in test-record [:email] (fn [x] "bleh")))))
+        (is (= false
+               (valid? record-validations
+                       (update-in test-record [:email] (fn [x] nil)))))
+        (is (= {:email #{"has incorrect format"}}
+               (record-validations
+                (update-in test-record [:email] (fn [x] "bleh")))))
+        (is (= true
+               (valid? record-validations test-record))))
+      (deftest email-key-should-exist
+        (is (= {:email #{"can't be blank"}}
+               (record-validations (dissoc test-record :email)))))
+      (deftest email-can-be-blank
+        (is (= true
+               (valid? record-validations
+                       (update-in test-record [:email] (fn [x] "")))))))
+
+    (deftest base-record-should-have-minimally-viable-map-structure
+      (is (= true
+             (valid? record-validations
+                     base-record)))
+      (is (= {}
+             (record-validations base-record))))))
