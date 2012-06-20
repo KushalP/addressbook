@@ -33,7 +33,10 @@
            (presence-of :type)
            (presence-of :label)
            (presence-of :street)
-           (presence-of :locality))]
+           (presence-of :locality)
+           (presence-of :region)
+           (presence-of :code)
+           (presence-of :country))]
     (valid? v m)))
 
 (def record-validations

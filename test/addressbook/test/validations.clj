@@ -36,8 +36,22 @@
 
   (testing "valid-address?"
     (deftest bad-inputs-fail-to-pass
-      (is (= false (valid-address? {:bleh 2 :bloop 3})))
-      (is (= false (valid-address? [1 2 3])))))
+      (let [example-address {:type "work"
+                             :label "42 Plantation St.\nBaytown, LA 30314\nUnited States of America"
+                             :street "42 Plantation St."
+                             :locality "Baytown"
+                             :region "LA"
+                             :code "30314"
+                             :country "United States of America"}]
+        (is (= false (valid-address? {:bleh 2 :bloop 3})))
+        (is (= false (valid-address? [1 2 3])))
+        (is (= false (valid-address? (dissoc example-address :type))))
+        (is (= false (valid-address? (dissoc example-address :label))))
+        (is (= false (valid-address? (dissoc example-address :street))))
+        (is (= false (valid-address? (dissoc example-address :locality))))
+        (is (= false (valid-address? (dissoc example-address :region))))
+        (is (= false (valid-address? (dissoc example-address :code))))
+        (is (= false (valid-address? (dissoc example-address :country)))))))
 
   (testing "map structure"
     (testing "formatted-name"
