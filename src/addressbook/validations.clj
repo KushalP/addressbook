@@ -13,7 +13,7 @@
             errors (if (and (vector? value)
                             (every? check-fn value))
                      {}
-                     {attribute #{"must be a vector of maps"}})]
+                     {attribute #{"must be a valid vector"}})]
         [(empty? errors) errors]))))
 
 (defn valid-tel?

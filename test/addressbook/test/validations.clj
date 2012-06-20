@@ -19,7 +19,7 @@
         (is (= false (valid? v {:a [#{"b" "o"} #{"r" "k"}]})))
         (is (= false (valid? v {:a ['(1 2) '(3 4)]}))))
       (deftest bad-inputs-show-an-error-message
-        (is (= {:a #{"must be a vector of maps"}} (v {:a nil}))))
+        (is (= {:a #{"must be a valid vector"}} (v {:a nil}))))
       (deftest vectors-of-maps-will-pass
         (is (= true (valid? v {:a []})))
         (is (= {} (v {:a []})))
