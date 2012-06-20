@@ -4,17 +4,37 @@
 (def email-regex
   #"(?i)\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b")
 
-(defn is-vector-of-maps
-  "A valid validateur function to check if a given key in our map holds a vector of maps"
-  [attribute]
+(defn is-vector-of
+  "A valid validateur function to check if a given key in our map holds a vector, and each item in the vector adheres to the passed function"
+  [check-fn attribute]
   (let [f (if (vector? attribute) get-in get)]
     (fn [m]
       (let [value  (f m attribute)
             errors (if (and (vector? value)
-                            (every? map? value))
+                            (every? check-fn value))
                      {}
                      {attribute #{"must be a vector of maps"}})]
         [(empty? errors) errors]))))
+
+(defn valid-tel?
+  "Checks that a given map holds a valid telephone number structure"
+  [m]
+  (let [v (validation-set
+           ;; check keys exist.
+           (presence-of :type)
+           (presence-of :value))]
+    (valid? v m)))
+
+(defn valid-address?
+  "Checks that a given map holds a valid address structure"
+  [m]
+  (let [v (validation-set
+           ;; check keys exist.
+           (presence-of :type)
+           (presence-of :label)
+           (presence-of :street)
+           (presence-of :locality))]
+    (valid? v m)))
 
 (def record-validations
   "Validation set for the map form of a vCard data structure"
@@ -36,5 +56,5 @@
 
    ;; check values are formatted correctly.
    (format-of :email :format email-regex :allow-blank true)
-   (is-vector-of-maps :address)
-   (is-vector-of-maps :tel)))
+   (is-vector-of map? :address)
+   (is-vector-of map? :tel)))
