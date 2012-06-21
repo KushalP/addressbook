@@ -3,6 +3,8 @@
 A Restful web app which holds and retrieves contact information. It
 can provide output formatted as either JSON or vCard.
 
+[![Continuous Integration status](https://secure.travis-ci.org/KushalP/addressbook.png)](http://travis-ci.org/KushalP/addressbook)
+
 ## Development
 
 To start developing with address book, you'll need to have MongoDB
