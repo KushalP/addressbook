@@ -1,6 +1,7 @@
 (ns addressbook.core
   (:use [compojure.core]
         [ring.middleware.params :only [wrap-params]]
+        [ring.middleware.json-params]
         [addressbook.data]
         [addressbook.format])
   (:require [clojure.data.json :as json]
@@ -57,4 +58,5 @@
 
 (def app
   (handler/site (-> main-routes
-                    wrap-params)))
+                    wrap-params
+                    wrap-json-params)))
