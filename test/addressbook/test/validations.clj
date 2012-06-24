@@ -68,13 +68,13 @@
       (deftest email-should-be-properly-formatted
         (is (= false
                (valid? record-validations
-                       (update-in test-record [:email] (fn [x] "bleh")))))
+                       (assoc-in test-record [:email] "bleh"))))
         (is (= false
                (valid? record-validations
-                       (update-in test-record [:email] (fn [x] nil)))))
+                       (assoc-in test-record [:email] nil))))
         (is (= {:email #{"has incorrect format"}}
                (record-validations
-                (update-in test-record [:email] (fn [x] "bleh")))))
+                (assoc-in test-record [:email] "bleh"))))
         (is (= true
                (valid? record-validations test-record))))
       (deftest email-key-should-exist
@@ -83,7 +83,7 @@
       (deftest email-can-be-blank
         (is (= true
                (valid? record-validations
-                       (update-in test-record [:email] (fn [x] "")))))))
+                       (assoc-in test-record [:email] ""))))))
 
     (testing "base-record"
       (deftest should-have-minimally-viable-map-structure
