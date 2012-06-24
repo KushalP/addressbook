@@ -9,44 +9,41 @@
             [compojure.route :as route]))
 
 (defn status-helper
-  [body]
+  [body & [{success :success, failure :failure} codes] ]
   (if (contains? body :error)
-    404
-    200))
+    failure
+    success))
 
 (defroutes main-routes
   (GET "/" [] "<h1>TODO: Write docs</h1>")
   (GET "/contact/:id" [id]
        (let [result (get-contact id)
              body (-> result
-                      (json/json-str))
-             status (status-helper result)]
+                      (json/json-str))]
          {:headers {"Content-Type" "application/json"}
           :body body
-          :status status}))
+          :status (status-helper result {:success 200 :failure 404})}))
   (GET "/contact/:id/json" [id]
        (let [result (get-contact id)
              body (-> result
-                      (json/json-str))
-             status (status-helper result)]
+                      (json/json-str))]
          {:headers {"Content-Type" "application/json"}
           :body body
-          :status status}))
+          :status (status-helper result {:success 200 :failure 404})}))
   (GET "/contact/:id/vcard" [id]
        (let [result (get-contact id)
              body (-> result
-                      (vcard))
-             status (status-helper result)]
+                      (vcard))]
          {:headers {"Content-Type" "text/vcard"}
           :body body
-          :status status}))
+          :status (status-helper result {:success 200 :failure 404})}))
   (POST "/contact" {params :params}
         (let [result (add-contact params)]
           {:headers {"Content-Type" "application/json"}
            :body (-> {:message "contact created"
                       :id (:_id result)}
                      json/json-str)
-           :status 201}))
+           :status (status-helper result {:success 201 :failure 400})}))
   (route/not-found "<h1>Error</h1>"))
 
 (def app
