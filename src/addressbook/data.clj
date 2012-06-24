@@ -35,11 +35,13 @@
 
 (defn get-contact
   [id]
-  (try
-    (fetch-one :contacts
-               :where {:_id (object-id id)})
-    (catch IllegalArgumentException e
-      {:error {:message (str "contact with id: '" id "' not found")}})))
+  (let [error-msg {:error {:message (str "contact with id: '" id "' not found")}}]
+    (try
+      (let [result (fetch-one :contacts :where {:_id (object-id id)})]
+        (if (nil? result)
+          error-msg
+          result))
+      (catch IllegalArgumentException e error-msg))))
 
 (defn add-contact
   [data]
