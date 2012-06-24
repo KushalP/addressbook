@@ -18,31 +18,27 @@
   (GET "/" [] "<h1>TODO: Write docs</h1>")
   (GET "/contact/:id" [id]
        (let [result (get-contact id)
-             body (-> result
-                      (json/json-str))]
+             body (json/json-str result)]
          {:headers {"Content-Type" "application/json"}
           :body body
           :status (status-helper result {:success 200 :failure 404})}))
   (GET "/contact/:id/json" [id]
        (let [result (get-contact id)
-             body (-> result
-                      (json/json-str))]
+             body (json/json-str result)]
          {:headers {"Content-Type" "application/json"}
           :body body
           :status (status-helper result {:success 200 :failure 404})}))
   (GET "/contact/:id/vcard" [id]
        (let [result (get-contact id)
-             body (-> result
-                      (vcard))]
+             body (vcard result)]
          {:headers {"Content-Type" "text/vcard"}
           :body body
           :status (status-helper result {:success 200 :failure 404})}))
   (POST "/contact" {params :params}
         (let [result (add-contact params)]
           {:headers {"Content-Type" "application/json"}
-           :body (-> {:message "contact created"
-                      :id (:_id result)}
-                     json/json-str)
+           :body (json/json-str {:message "contact created"
+                                 :id (:_id result)})
            :status (status-helper result {:success 201 :failure 400})}))
   (route/not-found "<h1>Error</h1>"))
 
