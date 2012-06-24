@@ -17,22 +17,19 @@
 (defroutes main-routes
   (GET "/" [] "<h1>TODO: Write docs</h1>")
   (GET "/contact/:id" [id]
-       (let [result (get-contact id)
-             body (json/json-str result)]
+       (let [result (get-contact id)]
          {:headers {"Content-Type" "application/json"}
-          :body body
+          :body (json/json-str result)
           :status (status-helper result {:success 200 :failure 404})}))
   (GET "/contact/:id/json" [id]
-       (let [result (get-contact id)
-             body (json/json-str result)]
+       (let [result (get-contact id)]
          {:headers {"Content-Type" "application/json"}
-          :body body
+          :body (json/json-str result)
           :status (status-helper result {:success 200 :failure 404})}))
   (GET "/contact/:id/vcard" [id]
-       (let [result (get-contact id)
-             body (vcard result)]
+       (let [result (get-contact id)]
          {:headers {"Content-Type" "text/vcard"}
-          :body body
+          :body (vcard result)
           :status (status-helper result {:success 200 :failure 404})}))
   (POST "/contact" {params :params}
         (let [result (add-contact params)]
