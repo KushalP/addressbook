@@ -5,6 +5,7 @@
         [addressbook.data]
         [addressbook.format])
   (:require [clojure.data.json :as json]
+            [clojure.java.io :as io]
             [compojure.handler :as handler]
             [compojure.route :as route]))
 
@@ -15,7 +16,7 @@
     success))
 
 (defroutes main-routes
-  (GET "/" [] "<h1>TODO: Write docs</h1>")
+  (GET "/" [] (slurp (io/file "resources/public/index.html")))
   (GET "/contact/:id" [id]
        (let [result (get-contact id)]
          {:headers {"Content-Type" "application/json"}

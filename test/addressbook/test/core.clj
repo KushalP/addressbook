@@ -5,7 +5,8 @@
         [clojure.test]
         [ring.mock.request]
         [somnium.congomongo])
-  (:require [clojure.data.json :as json]))
+  (:require [clojure.data.json :as json]
+            [clojure.java.io :as io]))
 
 (testing "Restful endpoints for handlers"
   (let [test-conn (make-connection "contacts-development"
@@ -22,7 +23,8 @@
     (testing "GET / (homepage)"
       (deftest base-route-returns-docs
         (is (= 200 (:status (app (request :get "/")))))
-        (is (= "<h1>TODO: Write docs</h1>" (:body (app (request :get "/")))))))
+        (is (= (slurp (io/file "resources/public/index.html"))
+               (:body (app (request :get "/")))))))
 
     (testing "GET /contact/:id"
       (deftest contact-with-id-produces-json-response
