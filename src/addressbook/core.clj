@@ -8,13 +8,6 @@
             [compojure.handler :as handler]
             [compojure.route :as route]))
 
-(defn get-contact-wrapper
-  [id]
-  (try
-    (get-contact id)
-    (catch IllegalArgumentException e
-      {:error {:message (str "contact with id: '" id "' not found")}})))
-
 (defn status-helper
   [body]
   (if (contains? body :error)
@@ -24,7 +17,7 @@
 (defroutes main-routes
   (GET "/" [] "<h1>TODO: Write docs</h1>")
   (GET "/contact/:id" [id]
-       (let [result (get-contact-wrapper id)
+       (let [result (get-contact id)
              body (-> result
                       (json/json-str))
              status (status-helper result)]
@@ -32,7 +25,7 @@
           :body body
           :status status}))
   (GET "/contact/:id/json" [id]
-       (let [result (get-contact-wrapper id)
+       (let [result (get-contact id)
              body (-> result
                       (json/json-str))
              status (status-helper result)]
@@ -40,7 +33,7 @@
           :body body
           :status status}))
   (GET "/contact/:id/vcard" [id]
-       (let [result (get-contact-wrapper id)
+       (let [result (get-contact id)
              body (-> result
                       (vcard))
              status (status-helper result)]
