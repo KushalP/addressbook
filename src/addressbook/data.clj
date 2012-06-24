@@ -1,6 +1,9 @@
 (ns addressbook.data
-  (:use somnium.congomongo)
-  (:require [clojure.data.json :as json]))
+  (:use [addressbook.validations]
+        [somnium.congomongo]
+        [validateur.validation])
+  (:require [clojure.data.json :as json]
+            [clojure.walk :as walk]))
 
 ;; These two blocks are adding the ability to convert ObjectId
 ;; objects into their equivalent string form. This means they
@@ -44,5 +47,14 @@
       (catch IllegalArgumentException e error-msg))))
 
 (defn add-contact
-  [data]
-  (insert! :contacts data))
+  [raw-data]
+  (let [data (walk/keywordize-keys raw-data)]
+    (if (valid? record-validations data)
+      (let [result (insert! :contacts data)]
+        (if (nil? result)
+          {:message "something went wrong"
+           :errors ["internal server error"]}
+          {:message "contact created"
+           :id (result :_id)}))
+      {:message "You have provided badly formatted data"
+       :errors (vec (record-validations data))})))

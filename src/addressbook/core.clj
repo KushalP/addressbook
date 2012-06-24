@@ -31,15 +31,13 @@
          {:headers {"Content-Type" "text/vcard"}
           :body (vcard result)
           :status (status-helper result {:success 200 :failure 404})}))
-  (POST "/contact" {params :params}
-        (let [result (add-contact params)]
+  (POST "/contact" request
+        (let [result (add-contact (request :json-params))]
           {:headers {"Content-Type" "application/json"}
-           :body (json/json-str {:message "contact created"
-                                 :id (:_id result)})
+           :body (json/json-str result)
            :status (status-helper result {:success 201 :failure 400})}))
   (route/not-found "<h1>Error</h1>"))
 
 (def app
   (handler/site (-> main-routes
-                    wrap-params
                     wrap-json-params)))

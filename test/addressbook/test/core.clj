@@ -18,7 +18,7 @@
                                    :where {:formatted-name "Forrest Gump"})]
              (if (not (nil? record))
                (:_id record)
-               (:_id (add-contact test-record))))]
+               (:id (add-contact test-record))))]
     (testing "GET / (homepage)"
       (deftest base-route-returns-docs
         (is (= 200 (:status (app (request :get "/")))))
@@ -48,8 +48,11 @@
     (testing "POST /contact"
       (deftest contact-is-created-on-post
         (let [response (app (-> (request :post "/contact")
-                                (header "content-type" "application/x-www-form-urlencoded")
-                                (body (update-in test-record [:formatted-name] (fn [_] "Dummy")))))]
+                                (content-type "application/json")
+                                (body (json/json-str
+                                       (assoc-in test-record
+                                                 [:formatted-name]
+                                                 "Dummy")))))]
           (is (= {"Content-Type" "application/json"} (:headers response)))
           ;; Drop the :id key as this is likely to be dynamically generated
           ;; for each test run.

@@ -18,4 +18,27 @@
                (get-contact "1faa22b333333cc44dd55555"))))
       (deftest existing-id-produces-record-map
         (is (= test-record
-               (dissoc (get-contact id) :_id)))))))
+               (dissoc (get-contact id) :_id)))))
+    (testing "add-contact"
+      (deftest bad-data-produces-error-response
+        (is (= {:message "You have provided badly formatted data",
+                :errors [[[:name :prefix] #{"can't be blank"}]
+                         [[:name :family] #{"can't be blank"}]
+                         [:name #{"can't be blank"}]
+                         [[:name :suffix] #{"can't be blank"}]
+                         [:org #{"can't be blank"}]
+                         [:photo #{"can't be blank"}]
+                         [:title #{"can't be blank"}]
+                         [:email #{"can't be blank"}]
+                         [[:name :additional] #{"can't be blank"}]
+                         [[:name :given] #{"can't be blank"}]
+                         [:address #{"must be a valid vector" "can't be blank"}]
+                         [:formatted-name #{"can't be blank"}]
+                         [:tel #{"must be a valid vector" "can't be blank"}]]}
+               (add-contact {:test "bob"}))))
+      (deftest good-data-is-added-to-the-database
+        (is (= {:message "contact created"}
+               (dissoc (add-contact (assoc-in test-record
+                                              [:formatted-name]
+                                              "Duh"))
+                       :id)))))))
