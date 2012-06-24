@@ -37,6 +37,7 @@
           {:headers {"Content-Type" "application/json"}
            :body (json/json-str result)
            :status (status-helper result {:success 201 :failure 400})}))
+  (route/resources "/")
   (route/not-found "<h1>Error</h1>"))
 
 (def app
