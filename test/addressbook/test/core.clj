@@ -48,6 +48,42 @@
                (:body (app (request :get (str "/contact/" id "/vcard"))))))))
 
     (testing "POST /contact"
+      (deftest contact-is-not-created-on-invalid-post-data
+        (let [response (app (-> (request :post "/contact")
+                                (content-type "application/json")
+                                (body (json/json-str {:test "dummy"}))))]
+          (is (= {"Content-Type" "application/json"} (:headers response)))
+          (is (= 400 (:status response)))
+          (is (= {:message "You have provided badly formatted data",
+                  :errors [[["name" "prefix"] ["can't be blank"]]
+                           [["name" "family"] ["can't be blank"]]
+                           ["name" ["can't be blank"]]
+                           [["name" "suffix"] ["can't be blank"]]
+                           ["org" ["can't be blank"]]
+                           ["photo" ["can't be blank"]]
+                           ["title" ["can't be blank"]]
+                           ["email" ["can't be blank"]]
+                           [["name" "additional"] ["can't be blank"]]
+                           [["name" "given"] ["can't be blank"]]
+                           ["address" ["must be a valid vector" "can't be blank"]]
+                           ["formatted-name" ["can't be blank"]]
+                           ["tel" ["must be a valid vector" "can't be blank"]]]}
+                 (-> (:body response)
+                     (json/read-json))))))
+      (deftest contact-is-not-created-on-incomplete-post-data
+        (let [response (app (-> (request :post "/contact")
+                                (content-type "application/json")
+                                (body (-> test-record
+                                          (dissoc :tel)
+                                          (dissoc :email)
+                                          (json/json-str)))))]
+          (is (= {"Content-Type" "application/json"} (:headers response)))
+          (is (= 400 (:status response)))
+          (is (= {:message "You have provided badly formatted data",
+                  :errors [["email" ["can't be blank"]]
+                           ["tel" ["must be a valid vector" "can't be blank"]]]}
+                 (-> (:body response)
+                     (json/read-json))))))
       (deftest contact-is-created-on-post
         (let [response (app (-> (request :post "/contact")
                                 (content-type "application/json")

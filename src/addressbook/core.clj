@@ -11,7 +11,8 @@
 
 (defn status-helper
   [body & [{success :success, failure :failure} codes] ]
-  (if (contains? body :error)
+  (if (or (contains? body :error)
+          (contains? body :errors))
     failure
     success))
 
