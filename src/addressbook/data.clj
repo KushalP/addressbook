@@ -55,7 +55,7 @@
           {:message "something went wrong"
            :errors ["internal server error"]}
           {:message "contact created"
-           :id (result :_id)}))
+           :id (.toStringMongod (result :_id))}))
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
 
@@ -68,4 +68,4 @@
     (let [original (get-contact id)]
       (if (contains? original :error)
         original
-        nil))))
+        (update! :contacts original (merge original values))))))

@@ -50,4 +50,16 @@
         (is (= {:error {:message "You must provide an id and the values to update"}}
                (update-contact nil nil)))
         (is (= {:error {:message "You must provide an id and the values to update"}}
-               (update-contact id {})))))))
+               (update-contact id {}))))
+      (deftest update-existing-record-with-values
+        (let [result (add-contact (assoc-in test-record [:formatted-name]
+                                            "TNGHT"))
+              local-id (:id result)
+              record (get-contact local-id)
+              response (dosync
+                        (update-contact local-id {:email "joe@bloggs.com"})
+                        (get-contact local-id))]
+          (is (= "TNGHT" (:formatted-name record)))
+          (is (= "forrestgump@example.com" (:email record)))
+          (is (= local-id (.toStringMongod (:_id response))))
+          (is (= "joe@bloggs.com" (:email response))))))))
