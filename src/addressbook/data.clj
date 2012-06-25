@@ -61,9 +61,9 @@
 
 (defn update-contact
   [id values]
-  (if (not (and (not (and (nil? id)
-                          (nil? values)))
-                (not (empty? values))))
+  (if-not (and (not (and (nil? id)
+                         (nil? values)))
+               (not (empty? values)))
     {:error {:message "You must provide an id and the values to update"}}
     (let [original (get-contact id)]
       (if (contains? original :error)
