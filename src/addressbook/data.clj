@@ -58,3 +58,14 @@
            :id (result :_id)}))
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
+
+(defn update-contact
+  [id values]
+  (if (not (and (not (and (nil? id)
+                          (nil? values)))
+                (not (empty? values))))
+    {:error {:message "You must provide an id and the values to update"}}
+    (let [original (get-contact id)]
+      (if (contains? original :error)
+        original
+        nil))))

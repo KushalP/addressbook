@@ -101,4 +101,11 @@
           (is (= 201 (:status response)))
           (is (= "Dummy"
                  (:formatted-name (fetch-one :contacts
-                                             :where {:formatted-name "Dummy"})))))))))
+                                             :where {:formatted-name "Dummy"})))))))
+    (testing "PUT /contact/:id"
+      (deftest error-returned-if-object-id-does-not-exist
+        (let [response (app (-> (request :put "/contact/bloop")
+                                (content-type "application/json")
+                                (body (json/json-str {:test "dummy"}))))]
+          (is (= {:error {:message "contact with id: 'bloop' not found"}}
+                 (json/read-json (:body response)))))))))

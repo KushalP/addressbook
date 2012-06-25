@@ -41,4 +41,13 @@
                (dissoc (add-contact (assoc-in test-record
                                               [:formatted-name]
                                               "Duh"))
-                       :id)))))))
+                       :id)))))
+    (testing "update-contact"
+      (deftest cannot-update-non-existant-objectid
+        (is (= {:error {:message "contact with id: 'bleh' not found"}}
+               (update-contact "bleh" test-record))))
+      (deftest cannot-update-if-given-empty-values-to-update-with
+        (is (= {:error {:message "You must provide an id and the values to update"}}
+               (update-contact nil nil)))
+        (is (= {:error {:message "You must provide an id and the values to update"}}
+               (update-contact id {})))))))

@@ -33,6 +33,12 @@
          {:headers {"Content-Type" "text/vcard"}
           :body (vcard result)
           :status (status-helper result {:success 200 :failure 404})}))
+  (PUT "/contact/:id" request
+       (let [result (update-contact (:id (:params request))
+                                    (request :json-params))]
+         {:headers {"Content-Type" "application/json"}
+          :body (json/json-str result)
+          :status (status-helper result {:success 200 :failure 412})}))
   (POST "/contact" request
         (let [result (add-contact (request :json-params))]
           {:headers {"Content-Type" "application/json"}
