@@ -19,7 +19,7 @@
                                    :where {:formatted-name "Forrest Gump"})]
              (if (not (nil? record))
                (:_id record)
-               (:id (add-contact test-record))))]
+               (:id (add-contact! test-record))))]
     (testing "GET / (homepage)"
       (deftest base-route-returns-docs
         (is (= 200 (:status (app (request :get "/")))))

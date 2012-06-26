@@ -36,7 +36,7 @@
 
 (set-connection! conn)
 
-(defn get-contact
+(defn get-contact!
   [id]
   (let [error-msg {:error {:message (str "contact with id: '" id "' not found")}}]
     (try
@@ -46,7 +46,7 @@
           result))
       (catch IllegalArgumentException e error-msg))))
 
-(defn add-contact
+(defn add-contact!
   [raw-data]
   (let [data (walk/keywordize-keys raw-data)]
     (if (valid? record-validations data)
@@ -59,13 +59,13 @@
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
 
-(defn update-contact
+(defn update-contact!
   [id values]
   (if-not (and (not (and (nil? id)
                          (nil? values)))
                (not (empty? values)))
     {:error {:message "You must provide an id and the values to update"}}
-    (let [original (get-contact id)]
+    (let [original (get-contact! id)]
       (if (contains? original :error)
         original
         (update! :contacts original (merge original values))))))
