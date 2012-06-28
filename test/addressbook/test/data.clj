@@ -62,4 +62,24 @@
           (is (= "TNGHT" (:formatted-name record)))
           (is (= "forrestgump@example.com" (:email record)))
           (is (= local-id (.toStringMongod (:_id response))))
-          (is (= "joe@bloggs.com" (:email response))))))))
+          (is (= "joe@bloggs.com" (:email response)))))
+      (deftest do-not-update-if-params-are-not-allowed
+        (let [result (add-contact! (assoc-in test-record [:formatted-name]
+                                             "TNGHT"))
+              local-id (:id result)
+              record (get-contact! local-id)
+              response (update-contact! local-id {:bleh "bloop"})]
+          (is (= nil (:bleh response)))
+          (is (= "TNGHT" (:formatted-name record)))
+          (is (= {:error {:message "You cannot update those keys. See 'allowed-keys' for a list of updatable keys.",
+                          :allowed-keys '(:name :formatted-name :org :title :photo :tel :address :email)}}
+                 response))
+          (is (= nil (:bleh response)))))
+      (deftest update-record-if-id-exists-and-params-allowed
+        (let [result (add-contact! (assoc-in test-record [:formatted-name]
+                                             "TNGHT"))
+              local-id (:id result)
+              record (get-contact! local-id)
+              response (update-contact! local-id {:photo "http://meh.com"})]
+          (is (= {:success true}
+                 response)))))))

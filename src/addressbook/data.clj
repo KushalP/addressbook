@@ -59,13 +59,26 @@
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
 
+(defn is-built-within?
+  [x]
+  (reduce 'and (map #(contains? base-record %)
+                    (keys (walk/keywordize-keys x)))))
+
 (defn update-contact!
   [id values]
-  (if-not (and (not (and (nil? id)
-                         (nil? values)))
-               (not (empty? values)))
-    {:error {:message "You must provide an id and the values to update"}}
-    (let [original (get-contact! id)]
-      (if (contains? original :error)
-        original
-        (update! :contacts original (merge original values))))))
+  (let [allowed-keys (keys base-record)
+        error-values-needed {:error {:message "You must provide an id and the values to update"}}
+        error-params-not-allowed {:error {:message "You cannot update those keys. See 'allowed-keys' for a list of updatable keys."
+                                          :allowed-keys allowed-keys}}]
+    (if-not (and (not (and (nil? id)
+                           (nil? values)))
+                 (not (empty? values)))
+      error-values-needed
+      (if (is-built-within? values)
+        (let [original (get-contact! id)]
+          (if (contains? original :error)
+            original
+            (dosync
+             (update! :contacts original (merge original values))
+             {:success true})))
+        error-params-not-allowed))))

@@ -103,9 +103,16 @@
                  (:formatted-name (fetch-one :contacts
                                              :where {:formatted-name "Dummy"})))))))
     (testing "PUT /contact/:id"
-      (deftest error-returned-if-object-id-does-not-exist
+      (deftest error-returned-if-keys-to-update-not-allowed
         (let [response (app (-> (request :put "/contact/bloop")
                                 (content-type "application/json")
                                 (body (json/json-str {:test "dummy"}))))]
-          (is (= {:error {:message "contact with id: 'bloop' not found"}}
+          (is (= {:error {:message "You cannot update those keys. See 'allowed-keys' for a list of updatable keys.",
+                          :allowed-keys ["name" "formatted-name" "org" "title" "photo" "tel" "address" "email"]}}
+                 (json/read-json (:body response))))))
+      (deftest error-returned-if-object-id-does-not-exist
+        (let [response (app (-> (request :put (str "/contact/bleh"))
+                                (content-type "application/json")
+                                (body (json/json-str {:photo "http://meh.com"}))))]
+          (is (= {:error {:message "contact with id: 'bleh' not found"}}
                  (json/read-json (:body response)))))))))
