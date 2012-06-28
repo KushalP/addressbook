@@ -48,5 +48,4 @@
   (route/not-found "<h1>Error</h1>"))
 
 (def app
-  (handler/site (-> main-routes
-                    wrap-json-params)))
+  (handler/site (wrap-json-params main-routes)))
