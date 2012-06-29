@@ -59,7 +59,7 @@
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
 
-(defn is-built-within?
+(defn contains-valid-keys?
   [x]
   (reduce 'and (map #(contains? base-record %)
                     (keys (walk/keywordize-keys x)))))
@@ -74,7 +74,7 @@
                            (nil? values)))
                  (not (empty? values)))
       error-values-needed
-      (if (is-built-within? values)
+      (if (contains-valid-keys? values)
         (let [original (get-contact! id)]
           (if (contains? original :error)
             original
