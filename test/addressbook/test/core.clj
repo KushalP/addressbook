@@ -45,7 +45,12 @@
       (deftest contact-with-id-and-vcard-produces-vcard-response
         (is (= 200 (:status (app (request :get (str "/contact/" id "/vcard"))))))
         (is (= "BEGIN:VCARD\nVERSION:4.0\nN:Gump;Forrest;;;\nFN: Forrest Gump\nORG:Bubba Gump Shrimp Co.\nTITLE:Shrimp Man\nPHOTO:http://www.example.com/dir_photos/my_photo.gif\nTEL;TYPE=\"work,voice\";VALUE=uri:tel:+1-111-555-1212\nTEL;TYPE=\"home,voice\";VALUE=uri:tel:+1-404-555-1212\nADR;TYPE=work;LABEL=\"42 Plantation St.\nBaytown, LA 30314\nUnited States of America\"\n :;;42 Plantation St.;Baytown;LA;30314;United States of America\nEMAIL:forrestgump@example.com\nREV:20080424T195243Z\nEND:VCARD"
-               (:body (app (request :get (str "/contact/" id "/vcard"))))))))
+               (:body (app (request :get (str "/contact/" id "/vcard")))))))
+
+      (deftest contact-with-non-existant-id-and-vcard-produces-empty-vcard
+        (is (= 404 (:status (app (request :get "/contact/bloop/vcard")))))
+        (is (= "BEGIN:VCARD\nVERSION:4.0\nN:;;;;\nFN: \nORG:\nTITLE:\nPHOTO:\nEMAIL:\nREV:\nEND:VCARD"
+               (:body (app (request :get "/contact/bloop/vcard")))))))
 
     (testing "POST /contact"
       (deftest contact-is-not-created-on-invalid-post-data
