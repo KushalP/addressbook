@@ -1,5 +1,6 @@
 (ns addressbook.core
   (:use [compojure.core]
+        [ring.adapter.jetty]
         [ring.middleware.params :only [wrap-params]]
         [ring.middleware.json-params]
         [addressbook.data]
@@ -7,7 +8,8 @@
   (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
             [compojure.handler :as handler]
-            [compojure.route :as route]))
+            [compojure.route :as route])
+  (:gen-class))
 
 (defn status-helper
   [body & [{success :success, failure :failure} codes] ]
@@ -49,3 +51,7 @@
 
 (def app
   (handler/site (wrap-json-params main-routes)))
+
+(defn -main [& args]
+	(let [port (read-string (get (System/getenv) "PORT" "8080"))]
+    (run-jetty app {:port port})))

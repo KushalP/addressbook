@@ -6,7 +6,9 @@
                  [com.novemberain/validateur "1.1.0"]
                  [congomongo "0.1.9"]
                  [de.ubercode.clostache/clostache "1.3.0"]
-                 [ring-json-params "0.1.3"]]
+                 [ring-json-params "0.1.3"]
+                 [ring/ring-jetty-adapter "1.1.0"]]
   :dev-dependencies [[lein-ring "0.7.1"]
                      [ring-mock "0.1.2"]]
+  :main addressbook.core
   :ring {:handler addressbook.core/app})
