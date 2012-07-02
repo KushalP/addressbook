@@ -25,7 +25,6 @@
         (is (= {} (v {:a []})))
         (is (= {} (v {:a [{:t 1000} {:company "cyberdyne"}]})))
         (is (= true (valid? v {:a [{:t 1000} {:company "cyberdyne"}]}))))))
-
   (testing "valid-tel?"
     (deftest bad-inputs-fail-to-pass
       (is (= false (valid-tel? {:bleh 2 :bloop 3})))
@@ -33,7 +32,6 @@
     (deftest valid-telephones-pass
       (is (= true (valid-tel? {:type #{"home" "voice"}
                                :value "+1-404-555-1212"})))))
-
   (testing "valid-address?"
     (deftest bad-inputs-fail-to-pass
       (let [example-address {:type "work"
@@ -52,7 +50,6 @@
         (is (= false (valid-address? (dissoc example-address :region))))
         (is (= false (valid-address? (dissoc example-address :code))))
         (is (= false (valid-address? (dissoc example-address :country)))))))
-
   (testing "map structure"
     (testing "formatted-name"
       (deftest formatted-name-should-be-present
@@ -63,7 +60,6 @@
                (record-validations (dissoc test-record :formatted-name))))
         (is (= true
                (valid? record-validations test-record)))))
-
     (testing "email"
       (deftest email-should-be-properly-formatted
         (is (= false
@@ -84,7 +80,6 @@
         (is (= true
                (valid? record-validations
                        (assoc-in test-record [:email] ""))))))
-
     (testing "base-record"
       (deftest should-have-minimally-viable-map-structure
         (is (= true
