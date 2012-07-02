@@ -21,6 +21,21 @@ directory:
 
     lein ring server
 
+### Deploying Address Book
+
+You can deploy the address book app in one of two ways:
+
+1. Create a war file and run it with a server like Tomcat
+2. Create a jar file and run it as a service
+
+Here's how you would create the war file:
+
+    lein ring uberwar
+
+Here's how you would create the jar file:
+
+    lein uberjar
+
 ## License
 
 Copyright (C) 2012 Kushal Pisavadia
