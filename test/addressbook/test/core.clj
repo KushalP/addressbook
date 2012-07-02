@@ -25,6 +25,11 @@
         (is (= 200 (:status (app (request :get "/")))))
         (is (= (slurp (io/file "resources/public/index.html"))
                (:body (app (request :get "/")))))))
+    (testing "GET (404 error)"
+      (deftest not-available-urls-produce-404-page
+        (is (= 404 (:status (app (request :get "/bleh")))))
+        (is (= (slurp (io/file "resources/public/404.html"))
+               (:body (app (request :get "/bleh")))))))
 
     (testing "GET /contact/:id"
       (deftest contact-with-id-produces-json-response

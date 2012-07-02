@@ -47,7 +47,7 @@
            :body (json/json-str result)
            :status (status-helper result {:success 201 :failure 400})}))
   (route/resources "/")
-  (route/not-found "<h1>Error</h1>"))
+  (route/not-found (slurp (io/file "resources/public/404.html"))))
 
 (def app
   (handler/site (wrap-json-params main-routes)))
