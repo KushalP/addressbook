@@ -111,7 +111,7 @@
                  (not (empty? values)))
       error-values-needed
       (if (contains-valid-keys? values)
-        (let [original (get-contact! id)]
+        (let [original (get-contact id)]
           (if (contains? original :error)
             original
             (dosync
