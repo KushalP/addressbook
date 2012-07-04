@@ -37,6 +37,7 @@
 (set-connection! conn)
 
 (defn get-contact
+  "Given an ObjectId hash string, finds the corresponding contact map (if any) stored in the database"
   [id]
   (let [error-msg {:error {:message (str "contact with id: '" id "' not found")}}]
     (try
@@ -47,6 +48,7 @@
       (catch IllegalArgumentException e error-msg))))
 
 (defn add-contact!
+  "Adds a given contact map to the database"
   [raw-data]
   (let [data (walk/keywordize-keys raw-data)]
     (if (valid? record-validations data)
@@ -60,11 +62,13 @@
        :errors (vec (record-validations data))})))
 
 (defn contains-valid-keys?
+  "Checks whether a given contact map contains all of the required keys"
   [x]
   (reduce 'and (map #(contains? base-record %)
                     (keys (walk/keywordize-keys x)))))
 
 (defn update-contact!
+  "Given an ObjectId hash string, and a map of values, updates the contact map with the provided ObjectId with the provided values"
   [id values]
   (let [allowed-keys (keys base-record)
         error-values-needed {:error {:message "You must provide an id and the values to update"}}
