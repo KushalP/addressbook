@@ -82,4 +82,39 @@
               record (get-contact local-id)
               response (update-contact! local-id {:photo "http://meh.com"})]
           (is (= {:success true}
-                 response)))))))
+                 response)))))
+    (testing "flatten-vector-of-maps"
+      (let [vec-of-maps [{:type "work,voice"
+                          :value "+1-111-555-1212"}
+                         {:type "home,voice"
+                          :value "+1-404-555-1212"}]]
+        (deftest should-produce-nil-for-nil-values
+          (is (= nil (flatten-vector-of-maps {})))
+          (is (= nil (flatten-vector-of-maps [])))
+          (is (= nil (flatten-vector-of-maps '())))
+          (is (= nil (flatten-vector-of-maps nil))))
+        (deftest should-produce-nil-for-non-vector-structures
+          (is (= nil (flatten-vector-of-maps [1 2 3])))
+          (is (= nil (flatten-vector-of-maps 3)))
+          (is (= nil (flatten-vector-of-maps "bleh")))
+          (is (= nil (flatten-vector-of-maps '(:a :b :c)))))
+        (deftest should-flatten-vector-of-maps-into-vector
+          (is (= true (vector? (flatten-vector-of-maps vec-of-maps))))
+          (is (= ["work,voice" "+1-111-555-1212"
+                  "home,voice" "+1-404-555-1212"]
+                 (flatten-vector-of-maps vec-of-maps))))))
+    (testing "flatten-contact-values"
+      (deftest should-produce-nil-for-nil-values
+        (is (= nil (flatten-contact-values {})))
+        (is (= nil (flatten-contact-values [])))
+        (is (= nil (flatten-contact-values '())))
+        (is (= nil (flatten-contact-values nil))))
+      (deftest should-produce-nil-for-non-map-structures
+        (is (= nil (flatten-contact-values [1 2 3])))
+        (is (= nil (flatten-contact-values 3)))
+        (is (= nil (flatten-contact-values "bleh")))
+        (is (= nil (flatten-contact-values '(:a :b :c)))))
+      (deftest should-flatten-map-into-set
+        (is (= true (set? (flatten-contact-values test-record))))
+        (is (= #{"home,voice" "United States of America" "Shrimp Man" "forrestgump@example.com" "Baytown" "Bubba Gump Shrimp Co." "20080424T195243Z" "work" "Gump" "42 Plantation St.\nBaytown, LA 30314\nUnited States of America" "Forrest Gump" "LA" "http://www.example.com/dir_photos/my_photo.gif" "+1-404-555-1212" "work,voice" "42 Plantation St." "30314" "+1-111-555-1212" "Forrest"}
+               (flatten-contact-values test-record)))))))

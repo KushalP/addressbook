@@ -36,6 +36,44 @@
 
 (set-connection! conn)
 
+(defn contains-valid-keys?
+  "Checks whether a given contact map contains all of the required keys"
+  [contact-map]
+  (reduce 'and (map #(contains? base-record %)
+                    (keys (walk/keywordize-keys contact-map)))))
+
+(defn flatten-vector-of-maps
+  "Given a vector of maps, strips out the values from the map producing just a vector of values"
+  [vector]
+  (if (or (nil? vector)
+          (not (vector? vector)))
+    nil
+    (if (or (empty? vector)
+             (not (every? map? vector)))
+      nil
+      (-> (map vals vector)
+          (flatten)
+          (vec)))))
+
+(defn flatten-contact-values
+  "Given a contact map, strips out all values (even nested) and returns a set of the values"
+  [contact-map]
+  (if (or (nil? contact-map)
+          (not (map? contact-map)))
+    nil
+    (if (empty? contact-map)
+      nil
+      (let [name      (:name contact-map)
+            telephone (:tel contact-map)
+            address   (:address contact-map)]
+        (set (filter #(not (empty? %))
+                     (-> contact-map
+                         (assoc :name (vals name))
+                         (assoc :tel (flatten-vector-of-maps telephone))
+                         (assoc :address (flatten-vector-of-maps address))
+                         (vals)
+                         (flatten))))))))
+
 (defn get-contact
   "Given an ObjectId hash string, finds the corresponding contact map (if any) stored in the database"
   [id]
@@ -60,12 +98,6 @@
            :id (.toStringMongod (result :_id))}))
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
-
-(defn contains-valid-keys?
-  "Checks whether a given contact map contains all of the required keys"
-  [contact-map]
-  (reduce 'and (map #(contains? base-record %)
-                    (keys (walk/keywordize-keys contact-map)))))
 
 (defn update-contact!
   "Given an ObjectId hash string, and a map of values, updates the contact map with the provided ObjectId with the provided values"
