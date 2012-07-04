@@ -63,9 +63,9 @@
 
 (defn contains-valid-keys?
   "Checks whether a given contact map contains all of the required keys"
-  [x]
+  [contact-map]
   (reduce 'and (map #(contains? base-record %)
-                    (keys (walk/keywordize-keys x)))))
+                    (keys (walk/keywordize-keys contact-map)))))
 
 (defn update-contact!
   "Given an ObjectId hash string, and a map of values, updates the contact map with the provided ObjectId with the provided values"
