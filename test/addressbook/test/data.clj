@@ -13,12 +13,12 @@
     (testing "get-contact"
       (deftest bad-id-produces-error-response
         (is (= {:error {:message "contact with id: 'bleh' not found"}}
-               (get-contact! "bleh")))
+               (get-contact "bleh")))
         (is (= {:error {:message "contact with id: '1faa22b333333cc44dd55555' not found"}}
-               (get-contact! "1faa22b333333cc44dd55555"))))
+               (get-contact "1faa22b333333cc44dd55555"))))
       (deftest existing-id-produces-record-map
         (is (= test-record
-               (dissoc (get-contact! id) :_id)))))
+               (dissoc (get-contact id) :_id)))))
     (testing "add-contact"
       (deftest bad-data-produces-error-response
         (is (= {:message "You have provided badly formatted data",
@@ -55,10 +55,10 @@
         (let [result (add-contact! (assoc-in test-record [:formatted-name]
                                              "TNGHT"))
               local-id (:id result)
-              record (get-contact! local-id)
+              record (get-contact local-id)
               response (dosync
                         (update-contact! local-id {:email "joe@bloggs.com"})
-                        (get-contact! local-id))]
+                        (get-contact local-id))]
           (is (= "TNGHT" (:formatted-name record)))
           (is (= "forrestgump@example.com" (:email record)))
           (is (= local-id (.toStringMongod (:_id response))))
@@ -67,7 +67,7 @@
         (let [result (add-contact! (assoc-in test-record [:formatted-name]
                                              "TNGHT"))
               local-id (:id result)
-              record (get-contact! local-id)
+              record (get-contact local-id)
               response (update-contact! local-id {:bleh "bloop"})]
           (is (= nil (:bleh response)))
           (is (= "TNGHT" (:formatted-name record)))
@@ -79,7 +79,7 @@
         (let [result (add-contact! (assoc-in test-record [:formatted-name]
                                              "TNGHT"))
               local-id (:id result)
-              record (get-contact! local-id)
+              record (get-contact local-id)
               response (update-contact! local-id {:photo "http://meh.com"})]
           (is (= {:success true}
                  response)))))))

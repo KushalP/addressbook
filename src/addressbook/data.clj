@@ -36,7 +36,7 @@
 
 (set-connection! conn)
 
-(defn get-contact!
+(defn get-contact
   [id]
   (let [error-msg {:error {:message (str "contact with id: '" id "' not found")}}]
     (try
