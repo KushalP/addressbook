@@ -3,7 +3,8 @@
         [somnium.congomongo]
         [validateur.validation])
   (:require [clojure.data.json :as json]
-            [clojure.walk :as walk]))
+            [clojure.walk :as walk]
+            [clojure.string :as str]))
 
 ;; These two blocks are adding the ability to convert ObjectId
 ;; objects into their equivalent string form. This means they
@@ -45,12 +46,10 @@
 (defn flatten-vector-of-maps
   "Given a vector of maps, strips out the values from the map producing just a vector of values"
   [vector]
-  (if (or (nil? vector)
-          (not (vector? vector)))
-    nil
-    (if (or (empty? vector)
-             (not (every? map? vector)))
-      nil
+  (when-not (or (nil? vector)
+                (not (vector? vector)))
+    (when-not (or (empty? vector)
+                  (not (every? map? vector)))
       (-> (map vals vector)
           (flatten)
           (vec)))))
@@ -58,21 +57,24 @@
 (defn flatten-contact-values
   "Given a contact map, strips out all values (even nested) and returns a set of the values"
   [contact-map]
-  (if (or (nil? contact-map)
-          (not (map? contact-map)))
-    nil
-    (if (empty? contact-map)
-      nil
+  (when-not (or (nil? contact-map)
+                (not (map? contact-map)))
+    (when-not (empty? contact-map)
       (let [name      (:name contact-map)
             telephone (:tel contact-map)
             address   (:address contact-map)]
-        (set (filter #(not (empty? %))
-                     (-> contact-map
-                         (assoc :name (vals name))
-                         (assoc :tel (flatten-vector-of-maps telephone))
-                         (assoc :address (flatten-vector-of-maps address))
-                         (vals)
-                         (flatten))))))))
+        (set (map #(str/trim %)
+                  (flatten
+                   (map #(str/split % #"\n|,")
+                        (-> (filter #(not (empty? %))
+                                    (-> contact-map
+                                        (assoc :name (vals name))
+                                        (assoc :tel (flatten-vector-of-maps telephone))
+                                        (assoc :address (flatten-vector-of-maps address))
+                                        (vals)
+                                        (flatten)))
+                            (flatten)
+                            (set))))))))))
 
 (defn get-contact
   "Given an ObjectId hash string, finds the corresponding contact map (if any) stored in the database"
