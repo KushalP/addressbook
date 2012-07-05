@@ -116,5 +116,5 @@
         (is (= nil (flatten-contact-values '(:a :b :c)))))
       (deftest should-flatten-map-into-set
         (is (= true (set? (flatten-contact-values test-record))))
-        (is (= #{"United States of America" "Shrimp Man" "forrestgump@example.com" "Baytown" "Bubba Gump Shrimp Co." "20080424T195243Z" "LA 30314" "work" "Gump" "voice" "Forrest Gump" "LA" "http://www.example.com/dir_photos/my_photo.gif" "+1-404-555-1212" "42 Plantation St." "30314" "+1-111-555-1212" "Forrest" "home"}
+        (is (= #{"united states of america" "shrimp man" "forrestgump@example.com" "baytown" "bubba gump shrimp co." "20080424t195243z" "la 30314" "gump" "work" "voice" "forrest gump" "la" "http://www.example.com/dir_photos/my_photo.gif" "+1-404-555-1212" "30314" "42 plantation st." "forrest" "+1-111-555-1212" "home"}
                (flatten-contact-values test-record)))))))

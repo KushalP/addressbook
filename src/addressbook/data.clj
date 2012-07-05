@@ -63,18 +63,19 @@
       (let [name      (:name contact-map)
             telephone (:tel contact-map)
             address   (:address contact-map)]
-        (set (map #(str/trim %)
-                  (flatten
-                   (map #(str/split % #"\n|,")
-                        (-> (filter #(not (empty? %))
-                                    (-> contact-map
-                                        (assoc :name (vals name))
-                                        (assoc :tel (flatten-vector-of-maps telephone))
-                                        (assoc :address (flatten-vector-of-maps address))
-                                        (vals)
-                                        (flatten)))
-                            (flatten)
-                            (set))))))))))
+        (set (map #(.toLowerCase %)
+                  (map #(str/trim %)
+                       (flatten
+                        (map #(str/split % #"\n|,")
+                             (-> (filter #(not (empty? %))
+                                         (-> contact-map
+                                             (assoc :name (vals name))
+                                             (assoc :tel (flatten-vector-of-maps telephone))
+                                             (assoc :address (flatten-vector-of-maps address))
+                                             (vals)
+                                             (flatten)))
+                                 (flatten)
+                                 (set)))))))))))
 
 (defn get-contact
   "Given an ObjectId hash string, finds the corresponding contact map (if any) stored in the database"
