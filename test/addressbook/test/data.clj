@@ -129,4 +129,16 @@
       (deftest should-flatten-map-into-set
         (is (= true (set? (flatten-contact-values test-record))))
         (is (= #{"united states of america" "shrimp man" "forrestgump@example.com" "baytown" "bubba gump shrimp co." "20080424t195243z" "la 30314" "gump" "work" "voice" "forrest gump" "la" "http://www.example.com/dir_photos/my_photo.gif" "+1-404-555-1212" "30314" "42 plantation st." "forrest" "+1-111-555-1212" "home"}
-               (flatten-contact-values test-record)))))))
+               (flatten-contact-values test-record)))))
+    (testing "search-contact"
+      (deftest should-produce-error-response-for-non-set-of-strings
+        (let [error-msg {:error {:message "You must provide a set of search terms"}}]
+          (is (= error-msg (search-contacts nil)))
+          (is (= error-msg (search-contacts {:d 3})))
+          (is (= error-msg (search-contacts [1 2 3])))
+          (is (= error-msg (search-contacts '("a" "b" "c"))))
+          (is (= error-msg (search-contacts "bleh")))
+          (is (= error-msg (search-contacts #{1 2 3 4})))
+          (is (= error-msg (search-contacts #{:a :b :c :d})))))
+      (deftest should-produce-nil-when-no-results-are-found
+        (is (= nil (search-contacts #{"bleh" "bloop"})))))))

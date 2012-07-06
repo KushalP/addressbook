@@ -104,6 +104,17 @@
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
 
+(defn search-contacts
+  "Given a set of strings to search with, find the set of contacts it best matches"
+  [search-terms]
+  (let [error-msg {:error {:message "You must provide a set of search terms"}}]
+    (if (or (nil? search-terms)
+            (not (set? search-terms))
+            (not (every? string? search-terms)))
+      error-msg
+      (let []
+        nil))))
+
 (defn update-contact!
   "Given an ObjectId hash string, and a map of values, updates the contact map with the provided ObjectId with the provided values"
   [id values]
