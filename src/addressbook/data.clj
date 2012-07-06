@@ -64,7 +64,7 @@
             telephone (:tel contact-map)
             address   (:address contact-map)]
         (set (map #(.toLowerCase %)
-                  (map #(str/trim %)
+                  (map str/trim
                        (flatten
                         (map #(str/split % #"\n|,")
                              (-> (filter #(not (empty? %))
@@ -85,8 +85,7 @@
       (let [result (fetch-one :contacts :where {:_id (object-id id)})]
         (if (nil? result)
           error-msg
-          (-> result
-              (dissoc :keywords))))
+          (dissoc result :keywords)))
       (catch IllegalArgumentException e error-msg))))
 
 (defn add-contact!
