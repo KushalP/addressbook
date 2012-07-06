@@ -85,7 +85,8 @@
       (let [result (fetch-one :contacts :where {:_id (object-id id)})]
         (if (nil? result)
           error-msg
-          result))
+          (-> result
+              (dissoc :keywords))))
       (catch IllegalArgumentException e error-msg))))
 
 (defn add-contact!
@@ -93,7 +94,8 @@
   [raw-data]
   (let [data (walk/keywordize-keys raw-data)]
     (if (valid? record-validations data)
-      (let [result (insert! :contacts data)]
+      (let [formed-data (assoc data :keywords (flatten-contact-values data))
+            result (insert! :contacts formed-data)]
         (if (nil? result)
           {:message "something went wrong"
            :errors ["internal server error"]}
@@ -118,6 +120,8 @@
           (if (contains? original :error)
             original
             (dosync
-             (update! :contacts original (merge original values))
-             {:success true})))
+             (let [merged-value (merge original values)
+                   new-form (assoc merged-value :keywords (flatten-contact-values (dissoc merged-value :_id)))]
+               (update! :contacts original new-form)
+               {:success true}))))
         error-params-not-allowed))))

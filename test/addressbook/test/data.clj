@@ -7,7 +7,7 @@
 (testing "database interactions"
   (let [id (let [record (fetch-one :contacts
                                    :where {:formatted-name "Forrest Gump"})]
-             (str (if (not (nil? record))
+             (.toStringMongod (if (not (nil? record))
                     (:_id record)
                     (:_id (add-contact! test-record)))))]
     (testing "get-contact"
@@ -18,7 +18,13 @@
                (get-contact "1faa22b333333cc44dd55555"))))
       (deftest existing-id-produces-record-map
         (is (= test-record
-               (dissoc (get-contact id) :_id)))))
+               (dissoc (get-contact id) :_id))))
+      (deftest test-record-should-have-keywords
+        (is (= (flatten-contact-values test-record)
+               (-> (fetch-one :contacts
+                              :where {:formatted-name "Forrest Gump"})
+                   :keywords
+                   (set))))))
     (testing "add-contact"
       (deftest bad-data-produces-error-response
         (is (= {:message "You have provided badly formatted data",
@@ -62,7 +68,13 @@
           (is (= "TNGHT" (:formatted-name record)))
           (is (= "forrestgump@example.com" (:email record)))
           (is (= local-id (.toStringMongod (:_id response))))
-          (is (= "joe@bloggs.com" (:email response)))))
+          (is (= "joe@bloggs.com" (:email response)))
+          (is (= (-> (fetch-one :contacts
+                                :where {:_id (object-id local-id)})
+                     :keywords
+                     (set))
+                 (flatten-contact-values (-> response
+                                             (dissoc :_id)))))))
       (deftest do-not-update-if-params-are-not-allowed
         (let [result (add-contact! (assoc-in test-record [:formatted-name]
                                              "TNGHT"))
