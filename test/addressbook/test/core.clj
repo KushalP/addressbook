@@ -3,20 +3,21 @@
         [addressbook.data]
         [addressbook.test.fixtures]
         [clojure.test]
-        [ring.mock.request]
-        [somnium.congomongo])
+        [monger.conversion :only [from-db-object]]
+        [ring.mock.request])
   (:require [clojure.data.json :as json]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [monger.core :as mg]
+            [monger.collection :as mc]))
 
 (testing "Restful endpoints for handlers"
-  (let [test-conn (make-connection "contacts-development"
-                                   :host "127.0.0.1"
-                                   :port 27017)
-        init-db (do (set-write-concern test-conn :safe)
-                    (set-connection! test-conn)
-                    (drop-coll! "contacts"))
-        id (let [record (fetch-one :contacts
-                                   :where {:formatted-name "Forrest Gump"})]
+  (let [test-conn (do (mg/connect! {:host "127.0.0.1"
+                                    :port 27017})
+                      (mg/set-db! (mg/get-db "contacts-development")))
+        init-db (mc/drop "contacts")
+        id (let [record (-> (mc/find-one "contacts"
+                                         {:formatted-name "Forrest Gump"})
+                            (from-db-object true))]
              (if (not (nil? record))
                (:_id record)
                (:id (add-contact! test-record))))]
@@ -105,8 +106,9 @@
                      (dissoc :id))))
           (is (= 201 (:status response)))
           (is (= "Dummy"
-                 (:formatted-name (fetch-one :contacts
-                                             :where {:formatted-name "Dummy"})))))))
+                 (:formatted-name (-> (mc/find-one "contacts"
+                                                   {:formatted-name "Dummy"})
+                                      (from-db-object true))))))))
     (testing "PUT /contact/:id"
       (deftest error-returned-if-keys-to-update-not-allowed
         (let [response (app (-> (request :put "/contact/bloop")

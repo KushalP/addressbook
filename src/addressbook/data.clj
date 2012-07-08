@@ -1,10 +1,13 @@
 (ns addressbook.data
   (:use [addressbook.validations]
-        [somnium.congomongo]
-        [validateur.validation])
+        [validateur.validation]
+        [monger.conversion :only [from-db-object]])
   (:require [clojure.data.json :as json]
             [clojure.walk :as walk]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [monger.core :as mg]
+            [monger.collection :as mc])
+  (:import [org.bson.types ObjectId]))
 
 ;; These two blocks are adding the ability to convert ObjectId
 ;; objects into their equivalent string form. This means they
@@ -30,12 +33,8 @@
    :address []
    :email ""})
 
-(def conn
-  (make-connection "contacts"
-                   :host "127.0.0.1"
-                   :port 27017))
-
-(set-connection! conn)
+(mg/connect!)
+(mg/set-db! (mg/get-db "contacts"))
 
 (defn contains-valid-keys?
   "Checks whether a given contact map contains all of the required keys"
@@ -82,7 +81,9 @@
   [id]
   (let [error-msg {:error {:message (str "contact with id: '" id "' not found")}}]
     (try
-      (let [result (fetch-one :contacts :where {:_id (object-id id)})]
+      (let [result (from-db-object (mc/find-by-id "contacts"
+                                                  (ObjectId. id))
+                                   true)]
         (if (nil? result)
           error-msg
           (dissoc result :keywords)))
@@ -93,13 +94,16 @@
   [raw-data]
   (let [data (walk/keywordize-keys raw-data)]
     (if (valid? record-validations data)
-      (let [formed-data (assoc data :keywords (flatten-contact-values data))
-            result (insert! :contacts formed-data)]
+      (let [id (ObjectId.)
+            formed-data (-> data
+                            (assoc :keywords (flatten-contact-values data))
+                            (assoc :_id id))
+            result (mc/insert "contacts" formed-data)]
         (if (nil? result)
           {:message "something went wrong"
            :errors ["internal server error"]}
           {:message "contact created"
-           :id (.toStringMongod (result :_id))}))
+           :id (.toStringMongod id)}))
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
 
@@ -129,9 +133,10 @@
         (let [original (get-contact id)]
           (if (contains? original :error)
             original
-            (dosync
-             (let [merged-value (merge original values)
-                   new-form (assoc merged-value :keywords (flatten-contact-values (dissoc merged-value :_id)))]
-               (update! :contacts original new-form)
-               {:success true}))))
+            (let [merged-value (merge original values)
+                  new-form (assoc merged-value :keywords
+                                  (flatten-contact-values
+                                   (dissoc merged-value :_id)))]
+              (mc/update-by-id "contacts" (ObjectId. id) new-form)
+              {:success true})))
         error-params-not-allowed))))

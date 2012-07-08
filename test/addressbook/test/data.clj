@@ -2,14 +2,19 @@
   (:use [addressbook.data]
         [addressbook.test.fixtures]
         [clojure.test]
-        [somnium.congomongo]))
+        [monger.conversion :only [from-db-object]])
+  (:require [monger.collection :as mc])
+  (:import [org.bson.types ObjectId]))
 
 (testing "database interactions"
-  (let [id (let [record (fetch-one :contacts
-                                   :where {:formatted-name "Forrest Gump"})]
-             (.toStringMongod (if (not (nil? record))
-                    (:_id record)
-                    (:_id (add-contact! test-record)))))]
+  (let [id (let [record (-> (mc/find-one "contacts"
+                                         {:formatted-name "Forrest Gump"})
+                            (from-db-object true))]
+             (-> (if (not (nil? record))
+                   record
+                   (add-contact! test-record))
+                 :_id
+                 .toStringMongod))]
     (testing "get-contact"
       (deftest bad-id-produces-error-response
         (is (= {:error {:message "contact with id: 'bleh' not found"}}
@@ -21,8 +26,9 @@
                (dissoc (get-contact id) :_id))))
       (deftest test-record-should-have-keywords
         (is (= (flatten-contact-values test-record)
-               (-> (fetch-one :contacts
-                              :where {:formatted-name "Forrest Gump"})
+               (-> (mc/find-one "contacts"
+                                {:formatted-name "Forrest Gump"})
+                   (from-db-object true)
                    :keywords
                    (set))))))
     (testing "add-contact"
@@ -69,8 +75,9 @@
           (is (= "forrestgump@example.com" (:email record)))
           (is (= local-id (.toStringMongod (:_id response))))
           (is (= "joe@bloggs.com" (:email response)))
-          (is (= (-> (fetch-one :contacts
-                                :where {:_id (object-id local-id)})
+          (is (= (-> (mc/find-one "contacts"
+                                  {:_id (ObjectId. local-id)})
+                     (from-db-object true)
                      :keywords
                      (set))
                  (flatten-contact-values (-> response
