@@ -29,7 +29,7 @@
                (-> (mc/find-one "contacts"
                                 {:formatted-name "Forrest Gump"})
                    (from-db-object true)
-                   :keywords
+                   :_keywords
                    (set))))))
     (testing "add-contact"
       (deftest bad-data-produces-error-response
@@ -78,7 +78,7 @@
           (is (= (-> (mc/find-one "contacts"
                                   {:_id (ObjectId. local-id)})
                      (from-db-object true)
-                     :keywords
+                     :_keywords
                      (set))
                  (flatten-contact-values (-> response
                                              (dissoc :_id)))))))

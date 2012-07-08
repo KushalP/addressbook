@@ -86,7 +86,7 @@
                                    true)]
         (if (nil? result)
           error-msg
-          (dissoc result :keywords)))
+          (dissoc result :_keywords)))
       (catch IllegalArgumentException e error-msg))))
 
 (defn add-contact!
@@ -96,7 +96,7 @@
     (if (valid? record-validations data)
       (let [id (ObjectId.)
             formed-data (-> data
-                            (assoc :keywords (flatten-contact-values data))
+                            (assoc :_keywords (flatten-contact-values data))
                             (assoc :_id id))
             result (mc/insert "contacts" formed-data)]
         (if (nil? result)
@@ -134,7 +134,7 @@
           (if (contains? original :error)
             original
             (let [merged-value (merge original values)
-                  new-form (assoc merged-value :keywords
+                  new-form (assoc merged-value :_keywords
                                   (flatten-contact-values
                                    (dissoc merged-value :_id)))]
               (mc/update-by-id "contacts" (ObjectId. id) new-form)
