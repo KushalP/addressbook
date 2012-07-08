@@ -1,13 +1,14 @@
 (ns addressbook.data
   (:use [addressbook.validations]
         [validateur.validation]
-        [monger.conversion :only [from-db-object]])
+        [monger.conversion :only [from-db-object to-object-id]]
+        [monger.operators]
+        [monger.util :only [object-id]])
   (:require [clojure.data.json :as json]
             [clojure.walk :as walk]
             [clojure.string :as str]
             [monger.core :as mg]
-            [monger.collection :as mc])
-  (:import [org.bson.types ObjectId]))
+            [monger.collection :as mc]))
 
 ;; These two blocks are adding the ability to convert ObjectId
 ;; objects into their equivalent string form. This means they
@@ -85,7 +86,7 @@
   (let [error-msg {:error {:message (str "contact with id: '" id "' not found")}}]
     (try
       (let [result (from-db-object (mc/find-by-id "contacts"
-                                                  (ObjectId. id))
+                                                  (to-object-id id))
                                    true)]
         (if (nil? result)
           error-msg
@@ -97,7 +98,7 @@
   [raw-data]
   (let [data (walk/keywordize-keys raw-data)]
     (if (valid? record-validations data)
-      (let [id (ObjectId.)
+      (let [id (object-id)
             formed-data (-> data
                             (assoc :_keywords (flatten-contact-values data))
                             (assoc :_id id))
@@ -110,6 +111,7 @@
       {:message "You have provided badly formatted data"
        :errors (vec (record-validations data))})))
 
+;; db.contacts.find({_keywords: {$in: ["dummy", "bleh"]}})
 (defn search-contacts
   "Given a set of strings to search with, find the set of contacts it best matches"
   [search-terms]
@@ -118,8 +120,10 @@
             (not (set? search-terms))
             (not (every? string? search-terms)))
       error-msg
-      (let []
-        nil))))
+      (let [result (mc/find-maps "contacts"
+                                 {:_keywords {$in (vec search-terms)}})]
+        (when-not (empty? result)
+          result)))))
 
 (defn update-contact!
   "Given an ObjectId hash string, and a map of values, updates the contact map with the provided ObjectId with the provided values"
@@ -140,6 +144,6 @@
                   new-form (assoc merged-value :_keywords
                                   (flatten-contact-values
                                    (dissoc merged-value :_id)))]
-              (mc/update-by-id "contacts" (ObjectId. id) new-form)
+              (mc/update-by-id "contacts" (to-object-id id) new-form)
               {:success true})))
         error-params-not-allowed))))

@@ -2,12 +2,15 @@
   (:use [addressbook.data]
         [addressbook.test.fixtures]
         [clojure.test]
-        [monger.conversion :only [from-db-object]])
-  (:require [monger.collection :as mc])
-  (:import [org.bson.types ObjectId]))
+        [monger.conversion :only [from-db-object to-object-id]])
+  (:require [monger.core :as mg]
+            [monger.collection :as mc]))
 
 (testing "database interactions"
-  (let [id (let [record (-> (mc/find-one "contacts"
+  (let [test-conn (do (mg/connect! {:host "127.0.0.1"
+                                    :port 27017})
+                      (mg/set-db! (mg/get-db "contacts-development")))
+        id (let [record (-> (mc/find-one "contacts"
                                          {:formatted-name "Forrest Gump"})
                             (from-db-object true))]
              (-> (if (not (nil? record))
@@ -76,7 +79,7 @@
           (is (= local-id (.toStringMongod (:_id response))))
           (is (= "joe@bloggs.com" (:email response)))
           (is (= (-> (mc/find-one "contacts"
-                                  {:_id (ObjectId. local-id)})
+                                  {:_id (to-object-id local-id)})
                      (from-db-object true)
                      :_keywords
                      (set))
@@ -148,4 +151,10 @@
           (is (= error-msg (search-contacts #{1 2 3 4})))
           (is (= error-msg (search-contacts #{:a :b :c :d})))))
       (deftest should-produce-nil-when-no-results-are-found
-        (is (= nil (search-contacts #{"bleh" "bloop"})))))))
+        (is (= nil (search-contacts #{"bleh" "bloop"}))))
+      (deftest should-produce-a-search-result-map
+        (is (= {:name {:prefix "", :family "Gump", :suffix "", :additional "", :given "Forrest"}, :org "Bubba Gump Shrimp Co.", :photo "http://www.example.com/dir_photos/my_photo.gif", :title "Shrimp Man", :email "forrestgump@example.com", :rev "20080424T195243Z", :address [{:country "United States of America", :locality "Baytown", :code "30314", :street "42 Plantation St.", :type "work", :region "LA", :label "42 Plantation St.\nBaytown, LA 30314\nUnited States of America"}], :formatted-name "Dummy", :tel [{:type "work,voice", :value "+1-111-555-1212"} {:type "home,voice", :value "+1-404-555-1212"}]}
+               (-> (search-contacts #{"dummy"})
+                   (first)
+                   (dissoc :_id)
+                   (dissoc :_keywords))))))))
