@@ -35,6 +35,9 @@
 
 (mg/connect!)
 (mg/set-db! (mg/get-db "contacts"))
+(mc/ensure-index "contacts"
+                 {:_keywords 1}
+                 {:name "keyword-search"})
 
 (defn contains-valid-keys?
   "Checks whether a given contact map contains all of the required keys"

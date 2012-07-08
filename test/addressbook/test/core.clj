@@ -13,8 +13,11 @@
 (testing "Restful endpoints for handlers"
   (let [test-conn (do (mg/connect! {:host "127.0.0.1"
                                     :port 27017})
-                      (mg/set-db! (mg/get-db "contacts-development")))
-        init-db (mc/drop "contacts")
+                      (mg/set-db! (mg/get-db "contacts-development"))
+                      (mc/drop "contacts")
+                      (mc/ensure-index "contacts"
+                                       {:_keywords 1}
+                                       {:name "keyword-search"}))
         id (let [record (-> (mc/find-one "contacts"
                                          {:formatted-name "Forrest Gump"})
                             (from-db-object true))]
