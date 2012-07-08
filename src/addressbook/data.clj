@@ -63,7 +63,7 @@
       (let [name      (:name contact-map)
             telephone (:tel contact-map)
             address   (:address contact-map)]
-        (set (map #(.toLowerCase %)
+        (set (map str/lower-case
                   (map str/trim
                        (flatten
                         (map #(str/split % #"\n|,")
