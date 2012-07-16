@@ -1,8 +1,7 @@
 (ns addressbook.core
   (:use [compojure.core]
         [ring.adapter.jetty]
-        [ring.middleware.params :only [wrap-params]]
-        [ring.middleware.json-params]
+        [ring.middleware.json]
         [addressbook.data]
         [addressbook.format])
   (:require [clojure.data.json :as json]
@@ -50,7 +49,9 @@
   (route/not-found (slurp (io/file "resources/public/404.html"))))
 
 (def app
-  (handler/site (wrap-json-params main-routes)))
+  (handler/site (-> main-routes
+                    wrap-json-params
+                    wrap-json-response)))
 
 (defn -main [& args]
 	(let [port (read-string (get (System/getenv) "PORT" "8080"))]
