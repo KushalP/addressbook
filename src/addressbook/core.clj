@@ -2,6 +2,7 @@
   (:use [compojure.core]
         [ring.adapter.jetty]
         [ring.middleware.json]
+        [ring.util.response :only (content-type response status)]
         [addressbook.data]
         [addressbook.format])
   (:require [clojure.data.json :as json]
@@ -21,30 +22,30 @@
   (GET "/" [] (slurp (io/file "resources/public/index.html")))
   (GET "/contact/:id" [id]
        (let [result (get-contact id)]
-         {:headers {"Content-Type" "application/json"}
-          :body (json/json-str result)
-          :status (status-helper result {:success 200 :failure 404})}))
+         (-> (response (json/json-str result))
+             (content-type "application/json")
+             (status (status-helper result {:success 200 :failure 404})))))
   (GET "/contact/:id/json" [id]
        (let [result (get-contact id)]
-         {:headers {"Content-Type" "application/json"}
-          :body (json/json-str result)
-          :status (status-helper result {:success 200 :failure 404})}))
+         (-> (response (json/json-str result))
+             (content-type "application/json")
+             (status (status-helper result {:success 200 :failure 404})))))
   (GET "/contact/:id/vcard" [id]
        (let [result (get-contact id)]
-         {:headers {"Content-Type" "text/vcard"}
-          :body (vcard result)
-          :status (status-helper result {:success 200 :failure 404})}))
+         (-> (response (vcard result))
+             (content-type "text/vcard")
+             (status (status-helper result {:success 200 :failure 404})))))
   (PUT "/contact/:id" request
        (let [result (update-contact! (:id (:params request))
                                      (request :json-params))]
-         {:headers {"Content-Type" "application/json"}
-          :body (json/json-str result)
-          :status (status-helper result {:success 200 :failure 412})}))
+         (-> (response (json/json-str result))
+             (content-type "application/json")
+             (status (status-helper result {:success 200 :failure 412})))))
   (POST "/contact" request
         (let [result (add-contact! (request :json-params))]
-          {:headers {"Content-Type" "application/json"}
-           :body (json/json-str result)
-           :status (status-helper result {:success 201 :failure 400})}))
+          (-> (response (json/json-str result))
+             (content-type "application/json")
+             (status (status-helper result {:success 201 :failure 400})))))
   (route/resources "/")
   (route/not-found (slurp (io/file "resources/public/404.html"))))
 
