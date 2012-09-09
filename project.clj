@@ -9,6 +9,6 @@
                  [ring/ring-jetty-adapter "1.1.5"]
                  [ring/ring-json "0.1.2"]]
   :dev-dependencies [[lein-ring "0.7.5"]
-                     [ring-mock "0.1.2"]]
+                     [ring-mock "0.1.3"]]
   :main addressbook.core
   :ring {:handler addressbook.core/app})
