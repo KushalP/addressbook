@@ -4,7 +4,7 @@
                  [org.clojure/data.json "0.1.2"]
                  [compojure "1.1.3"]
                  [com.novemberain/monger "1.2.0"]
-                 [com.novemberain/validateur "1.1.0"]
+                 [com.novemberain/validateur "1.2.0"]
                  [de.ubercode.clostache/clostache "1.3.0"]
                  [ring/ring-jetty-adapter "1.1.0"]
                  [ring/ring-json "0.1.0"]]
