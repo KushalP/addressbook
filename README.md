@@ -7,9 +7,14 @@ can provide output formatted as either JSON or vCard.
 
 ## Development
 
-To start developing with address book, you'll need to have MongoDB
-installed and setup with the correct permissions. Then run the
-following within the project directory:
+To start developing with address book, you'll need to have the
+following installed with the correct permissions:
+
+1. MongoDB
+2. Clojure
+3. Leiningen
+
+Then run the following within the project directory:
 
     lein deps
     lein test
@@ -25,7 +30,7 @@ directory:
 
 You can deploy the address book app in one of two ways:
 
-1. Create a war file and run it with a server like Tomcat
+1. Create a war file and run it with a server container like Tomcat
 2. Create a jar file and run it as a service
 
 Here's how you would create the war file:
