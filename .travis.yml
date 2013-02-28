@@ -1,5 +1,6 @@
 language: clojure
-script: lein test
+lein: lein2
+script: lein2 test
 services:
   - mongodb
 jdk:
