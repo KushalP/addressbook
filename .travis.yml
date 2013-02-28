@@ -1,5 +1,7 @@
 language: clojure
 script: lein test
+services:
+  - mongodb
 jdk:
   - openjdk7
   - openjdk6
