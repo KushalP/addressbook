@@ -3,7 +3,7 @@
 A Restful web app which holds and retrieves contact information. It
 can provide output formatted as either JSON or vCard.
 
-[![Continuous Integration status](https://secure.travis-ci.org/KushalP/addressbook.png)](http://travis-ci.org/KushalP/addressbook)
+[![Build Status](https://travis-ci.org/KushalP/addressbook.png?branch=master)](https://travis-ci.org/KushalP/addressbook)
 
 ## Development
 
