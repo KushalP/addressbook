@@ -6,8 +6,8 @@
                  [com.novemberain/monger "1.2.0"]
                  [com.novemberain/validateur "1.2.0"]
                  [de.ubercode.clostache/clostache "1.3.0"]
-                 [ring/ring-jetty-adapter "1.1.5"]
-                 [ring/ring-json "0.1.2"]]
+                 [ring/ring-jetty-adapter "1.1.8"]
+                 [ring/ring-json "0.2.0"]]
   :profiles {:dev {:dependencies [[lein-ring "0.7.5"]
                                   [ring-mock "0.1.3"]]}}
   :main addressbook.core
