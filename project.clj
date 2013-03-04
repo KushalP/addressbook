@@ -1,6 +1,6 @@
 (defproject addressbook "1.0.0-SNAPSHOT"
   :description "A Restful web app which holds and retrieves contact information"
-  :dependencies [[org.clojure/clojure "1.4.0"]
+  :dependencies [[org.clojure/clojure "1.5.0"]
                  [org.clojure/data.json "0.1.2"]
                  [compojure "1.1.5"]
                  [com.novemberain/monger "1.2.0"]
