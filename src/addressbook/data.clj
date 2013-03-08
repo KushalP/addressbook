@@ -70,7 +70,7 @@
                   (map str/trim
                        (flatten
                         (map #(str/split % #"\n|,")
-                             (-> (filter #(not (empty? %))
+                             (-> (remove empty?
                                          (-> contact-map
                                              (assoc :name (vals name))
                                              (assoc :tel (flatten-vector-of-maps telephone))
