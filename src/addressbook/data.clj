@@ -62,7 +62,7 @@
   [contact-map]
   (when-not (or (nil? contact-map)
                 (not (map? contact-map)))
-    (when-not (empty? contact-map)
+    (when (seq contact-map)
       (let [name      (:name contact-map)
             telephone (:tel contact-map)
             address   (:address contact-map)]
@@ -120,10 +120,8 @@
             (not (set? search-terms))
             (not (every? string? search-terms)))
       error-msg
-      (let [result (mc/find-maps "contacts"
-                                 {:_keywords {$in (vec search-terms)}})]
-        (when-not (empty? result)
-          result)))))
+      (let [result (mc/find-maps "contacts" {:_keywords {$in (vec search-terms)}})]
+        (when (seq result) result)))))
 
 (defn update-contact!
   "Given an ObjectId hash string, and a map of values, updates the contact map with the provided ObjectId with the provided values"
@@ -134,7 +132,7 @@
                                           :allowed-keys allowed-keys}}]
     (if-not (and (not (and (nil? id)
                            (nil? values)))
-                 (not (empty? values)))
+                 (seq values))
       error-values-needed
       (if (contains-valid-keys? values)
         (let [original (get-contact id)]
