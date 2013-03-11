@@ -21,10 +21,10 @@ Then run the following within the project directory:
 
 ### Development Server
 
-To run a development server, run the following within the project
-directory:
+To run a development server, run the following in two separate terminals:
 
     lein ring server
+    mongod
 
 ### Deploying Address Book
 

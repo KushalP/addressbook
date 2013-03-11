@@ -8,8 +8,8 @@
                  [de.ubercode.clostache/clostache "1.3.1"]
                  [ring/ring-jetty-adapter "1.1.8"]
                  [ring/ring-json "0.2.0"]]
-  :profiles {:dev {:dependencies [[lein-ring "0.7.5"]
-                                  [ring-mock "0.1.3"]]}}
+  :plugins [[lein-ring "0.8.3"]]
+  :profiles {:dev {:dependencies [[ring-mock "0.1.3"]]}}
   :main addressbook.core
   :ring {:handler addressbook.core/app}
   :test-selectors {:default (constantly true)})
