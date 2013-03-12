@@ -18,8 +18,12 @@
     failure
     success))
 
+(defonce pages
+  {:404 (slurp (io/file "resources/public/404.html"))
+   :index (slurp (io/file "resources/public/index.html"))})
+
 (defroutes main-routes
-  (GET "/" [] (slurp (io/file "resources/public/index.html")))
+  (GET "/" [] (:index pages))
   (GET "/contact/:id" [id]
        (let [result (get-contact id)]
          (-> (response (json/json-str result))
@@ -47,7 +51,7 @@
              (content-type "application/json")
              (status (status-helper result {:success 201 :failure 400})))))
   (route/resources "/")
-  (route/not-found (slurp (io/file "resources/public/404.html"))))
+  (route/not-found (:404 pages)))
 
 (def app
   (handler/site (-> main-routes
